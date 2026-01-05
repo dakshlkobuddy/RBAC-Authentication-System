@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
   if (!authHeader) {
     return res.status(401).json({ message: "Token missing" });
   }
-
+  
   // "Bearer <token>"
   const token = authHeader.split(" ")[1];
 

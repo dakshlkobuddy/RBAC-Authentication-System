@@ -1,0 +1,89 @@
+/* frontend/css/style.css */
+
+/* 1. Gradient Background for Login/Auth Pages */
+body.centered-body {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Beautiful Purple/Blue Gradient like the image */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. Admin Dashboard Background (Keep this simple/light) */
+body.admin-body {
+    background-color: #f4f6f9;
+    padding: 3rem;
+}
+
+/* 3. The Card Styling (White floating box) */
+.auth-card {
+    width: 380px;
+    border: none; /* Remove default Bootstrap border */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    background-color: white;
+    padding: 2.5rem; /* More internal spacing */
+}
+
+/* 4. Input Fields Styling */
+.form-control {
+    border-radius: 50px; /* Pill shape inputs */
+    padding-left: 20px;
+    height: 45px;
+    background-color: #f7f7f7;
+    border: 1px solid #eee;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #764ba2;
+    background-color: white;
+}
+
+/* 5. Input Group adjustments for the Eye Icon */
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.input-group .btn {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-left: none;
+    background-color: #f7f7f7;
+    border-color: #eee;
+}
+.input-group .btn:hover {
+    background-color: #e9ecef;
+}
+
+/* 6. Primary Button Styling (Gradient) */
+.btn-primary {
+    border-radius: 50px;
+    height: 45px;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #764ba2, #667eea);
+    transform: scale(1.02); /* Slight zoom on hover */
+}
+
+/* 7. Typography tweaks */
+.auth-title {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #666;
+    font-size: 0.9rem;
+    margin-left: 10px; /* Align label with pill input */
+}

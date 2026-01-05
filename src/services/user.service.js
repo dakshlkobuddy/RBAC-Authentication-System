@@ -1,6 +1,7 @@
 const pool = require("../config/database");
 const crypto = require("crypto");
-const { sendResetEmail } = require("./mail.service");
+// Import the renamed function
+const { sendSetPasswordEmail } = require("./mail.service");
 
 const createUser = async (name, email, role) => {
   const roleResult = await pool.query(
@@ -14,18 +15,21 @@ const createUser = async (name, email, role) => {
 
   const roleId = roleResult.rows[0].id;
 
-  const resetToken = crypto.randomBytes(32).toString("hex");
-  const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  // Renamed variable: 'setToken' instead of 'resetToken'
+  const setToken = crypto.randomBytes(32).toString("hex");
+  const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
+  // Note: We still save into the 'reset_token' DB column to avoid changing the Database Schema
   await pool.query(
     `
     INSERT INTO users (name, email, role_id, reset_token, reset_token_expiry)
     VALUES ($1, $2, $3, $4, $5)
     `,
-    [name, email, roleId, resetToken, expiry]
+    [name, email, roleId, setToken, tokenExpiry]
   );
 
-  await sendResetEmail(email, resetToken);
+  // Call the renamed function
+  await sendSetPasswordEmail(email, setToken);
 };
 
 module.exports = { createUser };
