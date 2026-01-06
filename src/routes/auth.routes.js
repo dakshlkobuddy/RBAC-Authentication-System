@@ -1,9 +1,50 @@
 const express = require("express");
 const router = express.Router();
+const crypto = require("crypto"); // ✅ Added for generating tokens
 
 const { loginUser } = require("../services/auth.service");
 const { hashPassword } = require("../utils/password.util");
+const { sendSetPasswordEmail } = require("../services/mail.service"); // ✅ Added for sending emails
 const pool = require("../config/database");
+
+/**
+ * =================================
+ * FORGOT PASSWORD (NEW)
+ * =================================
+ */
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // 1. Check if user exists
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    
+    if (userResult.rows.length === 0) {
+      // Security: Don't reveal if user doesn't exist
+      return res.json({ message: "If that email exists, we have sent a reset link." });
+    }
+
+    const user = userResult.rows[0];
+
+    // 2. Generate Token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // 3. Save Token to DB
+    await pool.query(
+      "UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE id = $3",
+      [resetToken, expiry, user.id]
+    );
+
+    // 4. Send Email (Pass 'reset' as the type)
+    await sendSetPasswordEmail(email, resetToken, 'reset');
+
+    res.json({ message: "If that email exists, we have sent a reset link." });
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 /**
  * =================================
