@@ -32,21 +32,27 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (res.ok) {
-            // Save token
+            // 1. Save token
             localStorage.setItem("token", data.token);
             
-            // Show Success
+            // 2. Show Success Message
             alertBox.innerHTML = `<div class="alert alert-success text-center">Login Successful! ✅</div>`;
             setTimeout(() => { alertBox.innerHTML = ""; }, 3000);
 
-            // Decode token and Redirect
+            // 3. Decode token and Redirect based on Role
             const payload = JSON.parse(atob(data.token.split('.')[1]));
+            
             setTimeout(() => {
                 if (payload.role === 'admin') {
                     window.location.href = "admin.html";
+                } else if (payload.role === 'finance') {
+                    // Redirect Finance users
+                    window.location.href = "finance.html";
+                } else if (payload.role === 'marketing') {
+                    // ✅ NEW: Redirect Marketing users to their dashboard
+                    window.location.href = "marketing.html";
                 } else {
-                    console.log("User logged in");
-                    // alert("Welcome User!"); // Uncomment if you want a popup
+                    console.log("Unknown role logged in");
                 }
             }, 2000); 
 
