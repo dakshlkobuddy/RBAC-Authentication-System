@@ -6,30 +6,29 @@ body.centered-body {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Beautiful Purple/Blue Gradient like the image */
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2. Admin Dashboard Background (Keep this simple/light) */
+/* 2. Admin Dashboard Background */
 body.admin-body {
     background-color: #f4f6f9;
     padding: 3rem;
 }
 
-/* 3. The Card Styling (White floating box) */
+/* 3. The Card Styling */
 .auth-card {
     width: 380px;
-    border: none; /* Remove default Bootstrap border */
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Soft shadow */
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     background-color: white;
-    padding: 2.5rem; /* More internal spacing */
+    padding: 2.5rem;
 }
 
 /* 4. Input Fields Styling */
-.form-control {
-    border-radius: 50px; /* Pill shape inputs */
+.form-control, .form-select {
+    border-radius: 50px; /* Pill shape */
     padding-left: 20px;
     height: 45px;
     background-color: #f7f7f7;
@@ -42,7 +41,7 @@ body.admin-body {
     background-color: white;
 }
 
-/* 5. Input Group adjustments for the Eye Icon */
+/* 5. Input Group adjustments */
 .input-group .form-control {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -58,20 +57,42 @@ body.admin-body {
     background-color: #e9ecef;
 }
 
-/* 6. Primary Button Styling (Gradient) */
-.btn-primary {
+/* 6. BUTTON STYLING (FIXED) */
+/* Applies to both Purple (Primary) and Green (Success) buttons */
+.btn-primary, .btn-success {
     border-radius: 50px;
     height: 45px;
-    background: linear-gradient(to right, #667eea, #764ba2);
     border: none;
     font-weight: 600;
     letter-spacing: 0.5px;
     transition: transform 0.2s;
+    padding: 0 30px; /* Adds space inside button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon and text */
 }
 
+/* Purple Gradient */
+.btn-primary {
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+}
 .btn-primary:hover {
     background: linear-gradient(to right, #764ba2, #667eea);
-    transform: scale(1.02); /* Slight zoom on hover */
+    transform: scale(1.02);
+    color: white;
+}
+
+/* Green Gradient (For Finance/Create) */
+.btn-success {
+    background: linear-gradient(to right, #42e695, #3bb2b8);
+    color: white;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #3bb2b8, #42e695);
+    transform: scale(1.02);
+    color: white;
 }
 
 /* 7. Typography tweaks */
@@ -85,5 +106,5 @@ body.admin-body {
     font-weight: 500;
     color: #666;
     font-size: 0.9rem;
-    margin-left: 10px; /* Align label with pill input */
+    margin-left: 10px;
 }

@@ -10,6 +10,13 @@ if (!token) {
 try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     document.getElementById("userEmailDisplay").innerText = payload.role.toUpperCase(); // Display Role
+
+    // ✅ NEW: Show "Back to Admin" button only if user is Admin
+    if (payload.role === 'admin') {
+        const backBtn = document.getElementById("backToAdminBtn");
+        if (backBtn) backBtn.style.display = "inline-flex"; // Make it visible
+    }
+
 } catch (e) {
     console.error("Token decode failed");
 }
