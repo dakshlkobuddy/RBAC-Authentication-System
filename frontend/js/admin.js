@@ -1,36 +1,35 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3000"; // Update if hosted on Render
 const token = localStorage.getItem("token");
 
 // 1. Redirect if not logged in
 if (!token) window.location.href = "login.html";
 
-// ==========================================
-// ✅ TOGGLE FORM LOGIC (Fixes the button issue)
-// ==========================================
+// --- Toggle Form Logic ---
 const toggleBtn = document.getElementById("toggleUserFormBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 const formCard = document.getElementById("createUserCard");
 
-// Only run if elements exist to prevent errors
 if (toggleBtn && formCard) {
-    // Show Form when "Create New User" is clicked
     toggleBtn.addEventListener("click", () => {
-        formCard.style.display = "block"; 
-        toggleBtn.style.display = "none"; // Hide the big button while form is open
+        formCard.style.display = "block";
+        toggleBtn.style.display = "none";
     });
 
-    // Hide Form when "Cancel" is clicked
     if (cancelBtn) {
         cancelBtn.addEventListener("click", () => {
             formCard.style.display = "none";
-            toggleBtn.style.display = "block"; // Show the big button again
+            toggleBtn.style.display = "block";
         });
     }
 }
 
-// ==========================================
-// CREATE USER LOGIC
-// ==========================================
+// --- Helper: Validate Email ---
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// --- Create User Logic ---
 document.getElementById("createUserForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     
@@ -40,6 +39,12 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
     const msgBox = document.getElementById("msgBox");
 
     msgBox.innerHTML = `<div class="alert alert-info">Processing...</div>`;
+
+    // ✅ NEW: Validation Check
+    if (!isValidEmail(email)) {
+        msgBox.innerHTML = `<div class="alert alert-warning">Invalid email format!</div>`;
+        return;
+    }
 
     try {
         const res = await fetch(`${API_URL}/admin/users`, {
@@ -54,14 +59,13 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
         const data = await res.json();
 
         if (res.ok) {
-            // Success
             msgBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
             document.getElementById("createUserForm").reset();
             
-            // Refresh the user list immediately
+            // Refresh list
             fetchUsers(); 
             
-            // Optional: Auto-hide the form after 2 seconds
+            // Auto-hide form
             setTimeout(() => {
                 msgBox.innerHTML = "";
                 if(formCard) {
@@ -70,7 +74,6 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
                 }
             }, 2000);
         } else {
-            // Error from backend
             msgBox.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
         }
     } catch (err) {
@@ -79,9 +82,7 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
     }
 });
 
-// ==========================================
-// FETCH & DISPLAY USERS LOGIC
-// ==========================================
+// --- Fetch & Delete Logic (Kept same as before) ---
 async function fetchUsers() {
     try {
         const res = await fetch(`${API_URL}/admin/users`, {
@@ -90,13 +91,11 @@ async function fetchUsers() {
         const data = await res.json();
         const tbody = document.getElementById("userTableBody");
 
-        // If no users found (or empty array)
         if (!data.users || data.users.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4">No users found.</td></tr>`;
             return;
         }
 
-        // Render rows
         tbody.innerHTML = data.users.map((user, index) => `
             <tr>
                 <td class="ps-4">${index + 1}</td>
@@ -117,14 +116,9 @@ async function fetchUsers() {
 
     } catch (err) {
         console.error("Failed to load users", err);
-        const tbody = document.getElementById("userTableBody");
-        if(tbody) tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>`;
     }
 }
 
-// ==========================================
-// DELETE USER LOGIC
-// ==========================================
 async function deleteUser(id) {
     if(!confirm("Are you sure you want to delete this user?")) return;
 
@@ -135,23 +129,19 @@ async function deleteUser(id) {
         });
 
         if (res.ok) {
-            fetchUsers(); // Refresh list to remove deleted user
+            fetchUsers(); 
         } else {
             alert("Failed to delete user");
         }
     } catch (err) {
         console.error(err);
-        alert("Error connecting to server");
     }
 }
 
-// ==========================================
-// LOGOUT LOGIC
-// ==========================================
 document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "login.html";
 });
 
-// Load users when page opens
+// Initial Load
 fetchUsers();

@@ -13,14 +13,16 @@ const loginUser = async (email, password) => {
   const result = await pool.query(userQuery, [email]);
 
   if (result.rows.length === 0) {
-    throw new Error("User not found");
+    // ✅ CHANGED: Use generic message for security
+    throw new Error("Invalid Credentials"); 
   }
 
   const user = result.rows[0];
 
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
-    throw new Error("Invalid password");
+    // ✅ CHANGED: Use generic message so user doesn't know if email or pass was wrong
+    throw new Error("Invalid Credentials"); 
   }
 
   const token = generateToken({
