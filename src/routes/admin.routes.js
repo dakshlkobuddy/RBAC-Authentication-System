@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const authMiddleware = require("../middlewares/auth.middleware");
 const rbacMiddleware = require("../middlewares/rbac.middleware");
 const pool = require("../config/database");
@@ -19,17 +18,41 @@ router.post(
     try {
       const { name, email, role } = req.body;
 
+      // 1. Basic Check
       if (!name || !email || !role) {
         return res.status(400).json({ message: "All fields are required" });
       }
 
+      // 2. Titanium Strict Regex (Matches Frontend)
+      const emailRegex = /^(?=.{1,64}@)[a-zA-Z0-9]+(?:[._-][a-zA-Z0-9]+)*@[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]{2,}$/;
+      
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format detected by server" });
+      }
+
+      // 3. Create User
       await createUser(name, email, role);
 
       res.json({
         message: "User created successfully and password setup email sent ✅",
       });
+
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      console.error("Create User Error:", err); // Helps debugging in terminal
+
+      // ✅ FIX: Catch Duplicate Email Error (Postgres Code 23505)
+      // We check for the code '23505' OR the specific constraint name
+      if (err.code === '23505' || err.constraint === 'users_email_key') {
+          return res.status(400).json({ message: "Email already exists" });
+      }
+
+      // Fallback: Check the error message text
+      if (err.message && err.message.includes("duplicate key")) {
+          return res.status(400).json({ message: "Email already exists" });
+      }
+
+      // Other errors
+      res.status(400).json({ message: "Server Error: " + err.message });
     }
   }
 );
@@ -81,7 +104,6 @@ router.put(
       const { id } = req.params;
       const { name, email, role } = req.body;
 
-      // ✅ At least one field required
       if (!name && !email && !role) {
         return res.status(400).json({
           message: "At least one field is required to update",
@@ -128,6 +150,10 @@ router.put(
 
       res.json({ message: "User updated successfully ✅" });
     } catch (err) {
+      // ✅ FIX: Also handle duplicates during Update
+      if (err.code === '23505' || err.constraint === 'users_email_key') {
+          return res.status(400).json({ message: "Email already exists" });
+      }
       console.error(err);
       res.status(500).json({ message: "Failed to update user" });
     }

@@ -23,10 +23,25 @@ if (toggleBtn && formCard) {
     }
 }
 
-// --- Helper: Validate Email ---
+// --- ✅ Helper: Titanium Strict Email Validation ---
 function isValidEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
+    // Regex Breakdown:
+    // ^(?=.{1,64}@)            -> [NEW] Enforce Local part is 1-64 characters MAX
+    // [a-zA-Z0-9]+             -> Starts with Letter/Number
+    // (?:[._-][a-zA-Z0-9]+)* -> Followed by symbols + text (prevents consecutive dots)
+    // @                        -> @ symbol
+    // [a-zA-Z]+                -> Domain must be LETTERS ONLY (No numbers)
+    // (?:-[a-zA-Z]+)* -> Domain can have hyphens
+    // \.                       -> Dot
+    // [a-zA-Z]{2,}$            -> Extension letters only (min 2)
+    const re = /^(?=.{1,64}@)[a-zA-Z0-9]+(?:[._-][a-zA-Z0-9]+)*@[a-zA-Z]+(?:-[a-zA-Z]+)*\.[a-zA-Z]{2,}$/;
+    return re.test(String(email).toLowerCase());
+}
+
+// --- Helper: Validate Name ---
+function isValidName(name) {
+    const re = /^[a-zA-Z\s'-]{2,50}$/;
+    return re.test(name.trim());
 }
 
 // --- Create User Logic ---
@@ -40,10 +55,16 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
 
     msgBox.innerHTML = `<div class="alert alert-info">Processing...</div>`;
 
-    // ✅ NEW: Validation Check
+    // 🛑 1. Validate Name
+    if (!isValidName(name)) {
+        msgBox.innerHTML = `<div class="alert alert-warning">Invalid Name!</div>`;
+        return; 
+    }
+
+    // 🛑 2. Validate Email (Titanium Strict Check)
     if (!isValidEmail(email)) {
-        msgBox.innerHTML = `<div class="alert alert-warning">Invalid email format!</div>`;
-        return;
+        msgBox.innerHTML = `<div class="alert alert-warning">Invalid email! (Local part must be &lt; 64 chars, no numbers in domain)</div>`;
+        return; 
     }
 
     try {
@@ -62,10 +83,8 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
             msgBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
             document.getElementById("createUserForm").reset();
             
-            // Refresh list
             fetchUsers(); 
             
-            // Auto-hide form
             setTimeout(() => {
                 msgBox.innerHTML = "";
                 if(formCard) {
@@ -76,13 +95,14 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
         } else {
             msgBox.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
         }
+
     } catch (err) {
         console.error(err);
         msgBox.innerHTML = `<div class="alert alert-danger">Error connecting to server</div>`;
     }
 });
 
-// --- Fetch & Delete Logic (Kept same as before) ---
+// --- Fetch & Delete Logic (Standard) ---
 async function fetchUsers() {
     try {
         const res = await fetch(`${API_URL}/admin/users`, {
