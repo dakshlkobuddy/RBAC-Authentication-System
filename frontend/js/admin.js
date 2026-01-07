@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000"; // Update if hosted on Render
+// const API_URL = "http://localhost:3000"; // Update if hosted on Render
+// const API_URL = "https://19dc01e0f3ca.ngrok-free.app";
+const API_URL = "";
 const token = localStorage.getItem("token");
 
 // 1. Redirect if not logged in
@@ -63,7 +65,7 @@ document.getElementById("createUserForm").addEventListener("submit", async (e) =
 
     // 🛑 2. Validate Email (Titanium Strict Check)
     if (!isValidEmail(email)) {
-        msgBox.innerHTML = `<div class="alert alert-warning">Invalid email! (Local part must be &lt; 64 chars, no numbers in domain)</div>`;
+        msgBox.innerHTML = `<div class="alert alert-warning">Invalid Email!</div>`;
         return; 
     }
 

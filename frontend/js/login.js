@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000"; // Update this to your Render URL if deployed
+// const API_URL = "http://localhost:3000"; // Update this to your Render URL if deployed
+// const API_URL = "https://19dc01e0f3ca.ngrok-free.app";
+const API_URL = "";
 
 // --- Eye Icon Logic ---
 const passwordInput = document.getElementById('password');

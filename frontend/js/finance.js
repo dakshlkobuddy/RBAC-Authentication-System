@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000";
+// const API_URL = "http://localhost:3000";
+// const API_URL = "https://19dc01e0f3ca.ngrok-free.app";
+const API_URL = "";
 const token = localStorage.getItem("token");
 
 // 1. Security Check
