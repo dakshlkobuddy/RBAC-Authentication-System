@@ -1,29 +1,54 @@
 /* frontend/css/style.css */
 
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(to right, #42e695, #3bb2b8);
+    --bg-color: #f4f6f9;
+    --text-dark: #2d3436;
+}
+
+body {
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    color: var(--text-dark);
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
 /* 1. Gradient Background for Login/Auth Pages */
 body.centered-body {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--primary-gradient);
+    padding: 20px; /* Padding for mobile screens */
 }
 
-/* 2. Admin Dashboard Background */
+/* 2. Admin/Dashboard Background */
 body.admin-body {
-    background-color: #f4f6f9;
-    padding: 3rem;
+    background-color: var(--bg-color);
+    padding: 2rem; /* Reduced from 3rem for better mobile fit */
 }
 
 /* 3. The Card Styling */
 .auth-card {
-    width: 380px;
+    width: 100%;
+    max-width: 400px; /* Better constraint */
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    padding: 2rem;
+}
+
+/* Dashboard Cards */
+.card {
     border: none;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    background-color: white;
-    padding: 2.5rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
 }
 
 /* 4. Input Fields Styling */
@@ -33,6 +58,7 @@ body.admin-body {
     height: 45px;
     background-color: #f7f7f7;
     border: 1px solid #eee;
+    font-size: 0.95rem;
 }
 
 .form-control:focus {
@@ -41,65 +67,77 @@ body.admin-body {
     background-color: white;
 }
 
-/* 5. Input Group adjustments */
+/* 5. Input Group adjustments (Icons inside inputs) */
 .input-group .form-control {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
+/* Fix for right-side buttons inside input groups */
 .input-group .btn {
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
     border-left: none;
     background-color: #f7f7f7;
     border-color: #eee;
+    z-index: 0; /* Prevents overlap issues */
 }
 .input-group .btn:hover {
     background-color: #e9ecef;
 }
 
-/* 6. BUTTON STYLING (FIXED) */
-/* Applies to both Purple (Primary) and Green (Success) buttons */
-.btn-primary, .btn-success {
+/* 6. BUTTON STYLING */
+.btn-primary, .btn-success, .btn-danger {
     border-radius: 50px;
     height: 45px;
     border: none;
     font-weight: 600;
     letter-spacing: 0.5px;
-    transition: transform 0.2s;
-    padding: 0 30px; /* Adds space inside button */
-    display: flex;
+    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 0 30px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Space between icon and text */
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* Purple Gradient */
 .btn-primary {
-    background: linear-gradient(to right, #667eea, #764ba2);
+    background: var(--primary-gradient);
     color: white;
 }
 .btn-primary:hover {
-    background: linear-gradient(to right, #764ba2, #667eea);
-    transform: scale(1.02);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
     color: white;
 }
 
-/* Green Gradient (For Finance/Create) */
+/* Green Gradient */
 .btn-success {
-    background: linear-gradient(to right, #42e695, #3bb2b8);
+    background: var(--success-gradient);
     color: white;
 }
 .btn-success:hover {
-    background: linear-gradient(to right, #3bb2b8, #42e695);
-    transform: scale(1.02);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(66, 230, 149, 0.4);
     color: white;
+}
+
+/* Red Button (Logout/Delete) */
+.btn-danger {
+    background: #ff7675;
+    color: white;
+}
+.btn-danger:hover {
+    background: #d63031;
+    transform: translateY(-2px);
 }
 
 /* 7. Typography tweaks */
 .auth-title {
     font-weight: 700;
     color: #333;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .form-label {
@@ -107,4 +145,72 @@ body.admin-body {
     color: #666;
     font-size: 0.9rem;
     margin-left: 10px;
+}
+
+/* 8. Table Styling */
+.table-responsive {
+    border-radius: 15px;
+    overflow: hidden;
+    background: white;
+    margin-top: 10px;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    color: #636e72;
+    font-weight: 600;
+    border: none;
+    padding: 15px;
+    white-space: nowrap; /* Keeps headers on one line */
+}
+
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f2f6;
+}
+
+/* =========================================
+   📱 MOBILE RESPONSIVENESS FIXES
+   ========================================= */
+@media (max-width: 768px) {
+    
+    /* Global Adjustments */
+    body.admin-body {
+        padding: 1rem; /* Less padding on mobile */
+    }
+
+    /* 1. Header Stacking (Title on top, Buttons below) */
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 15px;
+    }
+
+    /* 2. Full Width Inputs & Buttons */
+    .dashboard-container .input-group, 
+    .dashboard-container .d-flex.gap-2 {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .form-control, .form-select, .btn {
+        width: 100%; /* Make inputs full width on mobile */
+        margin-bottom: 10px;
+    }
+
+    /* Fix rounded corners when stacked */
+    .input-group .form-control {
+        border-radius: 50px !important;
+    }
+
+    /* 3. Table Scrolling */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+    }
+
+    /* 4. Font Sizes */
+    h2 { font-size: 1.5rem; }
+    .btn { font-size: 0.9rem; }
 }
