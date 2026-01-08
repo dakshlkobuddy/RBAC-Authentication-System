@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
-  secure: false, // TLS
+  secure: false, // Use true for 465, false for other ports
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -23,8 +23,9 @@ const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
   let subject, htmlContent, link;
 
   if (type === 'reset') {
-    // Forgot Password
+    // --- Forgot Password Email ---
     subject = "Password Reset Request";
+    // Points to reset-password.html
     link = `${FRONTEND_URL}/reset-password.html?token=${token}`;
     
     htmlContent = `
@@ -35,8 +36,9 @@ const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
       <p>This link expires in 1 hour.</p>
     `;
   } else {
-    // New User Invite
+    // --- New User Invite Email ---
     subject = "Welcome! Set your Account Password";
+    // Points to set-password.html
     link = `${FRONTEND_URL}/set-password.html?token=${token}`;
     
     htmlContent = `
@@ -57,8 +59,8 @@ const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
     });
     console.log(`✅ Email sent to ${email}`);
   } catch (err) {
-    console.error("❌ Email failed:", err);
-    // Don't crash the server if email fails, just log it
+    console.error("❌ Email failed:", err.message);
+    // Don't crash the server if email fails
   }
 };
 
