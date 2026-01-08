@@ -1,5 +1,4 @@
-// const API_URL = "http://localhost:3000"; // Update this to your Render URL if deployed
-const API_URL = "";
+const API_URL = "http://localhost:3000"; // Update this to your Render URL if deployed
 
 // --- Eye Icon Logic ---
 const passwordInput = document.getElementById('password');

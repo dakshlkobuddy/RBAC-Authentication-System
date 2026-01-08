@@ -1,5 +1,5 @@
-// const API_URL = "http://localhost:3000";
-const API_URL = "";
+// ✅ FIXED: Points to Backend Port 3000
+const API_URL = "http://localhost:3000"; 
 const token = localStorage.getItem("token");
 
 // 1. Security Check
@@ -7,17 +7,15 @@ if (!token) {
     window.location.href = "login.html";
 }
 
-// Decode token to get email/role for display
+// Decode token
 try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    document.getElementById("userEmailDisplay").innerText = payload.role.toUpperCase(); // Display Role
+    document.getElementById("userEmailDisplay").innerText = payload.role.toUpperCase();
 
-    // ✅ NEW: Show "Back to Admin" button only if user is Admin
     if (payload.role === 'admin') {
         const backBtn = document.getElementById("backToAdminBtn");
-        if (backBtn) backBtn.style.display = "inline-flex"; // Make it visible
+        if (backBtn) backBtn.style.display = "inline-flex"; 
     }
-
 } catch (e) {
     console.error("Token decode failed");
 }
@@ -31,17 +29,19 @@ async function fetchFinanceData() {
         const data = await res.json();
         const tbody = document.getElementById("financeTableBody");
 
-        if (data.data.length === 0) {
+        tbody.innerHTML = "";
+
+        if (!data.data || data.data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">No records found. Add one above!</td></tr>`;
             return;
         }
 
         tbody.innerHTML = data.data.map((item, index) => `
             <tr>
-                <td>${index + 1}</td>
+                <td class="ps-4 fw-bold text-secondary">${index + 1}</td>
                 <td>${item.message}</td>
                 <td class="text-muted small">${new Date(item.created_at).toLocaleString()}</td>
-                <td class="text-end">
+                <td class="text-end pe-4">
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditModal(${item.id}, '${item.message}')">
                         <i class="bi bi-pencil"></i>
                     </button>
@@ -75,75 +75,58 @@ document.getElementById("createFinanceForm").addEventListener("submit", async (e
         });
 
         if (res.ok) {
-            messageInput.value = ""; // Clear input
-            fetchFinanceData(); // Refresh list
+            messageInput.value = ""; 
+            fetchFinanceData(); // Refresh list immediately
+            msgBox.innerHTML = `<span class="text-success small fw-bold">Record Added!</span>`;
+            setTimeout(() => msgBox.innerHTML = "", 3000);
         } else {
-            msgBox.innerHTML = `<span class="text-danger">Failed to add record</span>`;
+            const err = await res.json();
+            msgBox.innerHTML = `<span class="text-danger small fw-bold">${err.message || "Failed"}</span>`;
         }
     } catch (err) {
         console.error(err);
+        msgBox.innerHTML = `<span class="text-danger small fw-bold">Server Error</span>`;
     }
 });
 
 // 4. Delete Record
 async function deleteRecord(id) {
-    if(!confirm("Are you sure you want to delete this record?")) return;
-
+    if(!confirm("Are you sure?")) return;
     try {
         const res = await fetch(`${API_URL}/finance/data/${id}`, {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${token}` }
         });
-
-        if (res.ok) {
-            fetchFinanceData();
-        } else {
-            alert("Failed to delete");
-        }
-    } catch (err) {
-        console.error(err);
-    }
+        if (res.ok) fetchFinanceData();
+        else alert("Failed to delete");
+    } catch (err) { console.error(err); }
 }
 
-// 5. Update Record (Modal Logic)
+// 5. Update Record
 const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-
-function openEditModal(id, currentMessage) {
+window.openEditModal = (id, currentMessage) => {
     document.getElementById("editId").value = id;
     document.getElementById("editMessage").value = currentMessage;
     editModal.show();
-}
+};
 
 document.getElementById("saveEditBtn").addEventListener("click", async () => {
     const id = document.getElementById("editId").value;
     const newMessage = document.getElementById("editMessage").value;
-
     try {
         const res = await fetch(`${API_URL}/finance/data/${id}`, {
             method: "PUT",
-            headers: { 
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` 
-            },
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
             body: JSON.stringify({ message: newMessage })
         });
-
-        if (res.ok) {
-            editModal.hide();
-            fetchFinanceData();
-        } else {
-            alert("Failed to update");
-        }
-    } catch (err) {
-        console.error(err);
-    }
+        if (res.ok) { editModal.hide(); fetchFinanceData(); }
+        else alert("Failed to update");
+    } catch (err) { console.error(err); }
 });
 
-// 6. Logout Logic
 document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "login.html";
 });
 
-// Initialize
 fetchFinanceData();

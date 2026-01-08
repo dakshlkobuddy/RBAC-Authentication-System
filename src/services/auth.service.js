@@ -13,7 +13,6 @@ const loginUser = async (email, password) => {
   const result = await pool.query(userQuery, [email]);
 
   if (result.rows.length === 0) {
-    // ✅ CHANGED: Use generic message for security
     throw new Error("Invalid Credentials"); 
   }
 
@@ -21,12 +20,12 @@ const loginUser = async (email, password) => {
 
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
-    // ✅ CHANGED: Use generic message so user doesn't know if email or pass was wrong
     throw new Error("Invalid Credentials"); 
   }
 
+  // ✅ FIXED: Using 'id' instead of 'userId' matches your routes!
   const token = generateToken({
-    userId: user.id,
+    id: user.id, 
     role: user.role,
   });
 

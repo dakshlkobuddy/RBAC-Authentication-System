@@ -1,5 +1,4 @@
-// const API_URL = "http://localhost:3000"; // Update to your Render URL if deployed
-const API_URL = "";
+const API_URL = "http://localhost:3000"; // Update to your Render URL if deployed
 
 // --- Eye Toggle Helper ---
 function setupPasswordToggle(inputId, buttonId, iconId) {

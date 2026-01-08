@@ -10,22 +10,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// ✅ HARDCODED: Points to your VS Code Live Server
+const FRONTEND_URL = "http://127.0.0.1:5500/frontend/html";
+
 /**
  * Sends an email to SET or RESET the password.
- * Added 'type' parameter to switch between Welcome email and Reset email.
- * * @param {string} email - Recipient email
+ * @param {string} email - Recipient email
  * @param {string} token - The reset/invite token
  * @param {string} type - 'welcome' (default) or 'reset'
  */
 const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
-  const baseUrl = process.env.FRONTEND_URL;
   let subject, htmlContent, link;
 
   if (type === 'reset') {
-    // --- Logic for Forgot Password Email ---
+    // Forgot Password
     subject = "Password Reset Request";
-    // Points to the NEW reset-password.html page
-    link = `${baseUrl}/reset-password.html?token=${token}`;
+    link = `${FRONTEND_URL}/reset-password.html?token=${token}`;
     
     htmlContent = `
       <h3>Password Reset</h3>
@@ -35,10 +35,9 @@ const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
       <p>This link expires in 1 hour.</p>
     `;
   } else {
-    // --- Logic for New User Invite (Default) ---
+    // New User Invite
     subject = "Welcome! Set your Account Password";
-    // Points to the existing set-password.html page
-    link = `${baseUrl}/set-password.html?token=${token}`;
+    link = `${FRONTEND_URL}/set-password.html?token=${token}`;
     
     htmlContent = `
       <h3>Welcome to the Team!</h3>
@@ -49,12 +48,18 @@ const sendSetPasswordEmail = async (email, token, type = 'welcome') => {
     `;
   }
 
-  await transporter.sendMail({
-    from: `"RBAC System" <${process.env.MAIL_USER}>`,
-    to: email,
-    subject: subject,
-    html: htmlContent,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"RBAC System" <${process.env.MAIL_USER}>`,
+      to: email,
+      subject: subject,
+      html: htmlContent,
+    });
+    console.log(`✅ Email sent to ${email}`);
+  } catch (err) {
+    console.error("❌ Email failed:", err);
+    // Don't crash the server if email fails, just log it
+  }
 };
 
 module.exports = { sendSetPasswordEmail };
