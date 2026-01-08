@@ -79,10 +79,20 @@ if (loginForm) {
             } else {
                 // Backend Error (e.g. Invalid Credentials)
                 alertBox.innerHTML = `<div class="alert alert-danger text-center">${data.message}</div>`;
+                // ✅ NEW: Disappear after 3 seconds
+                setTimeout(() => { alertBox.innerHTML = ""; }, 3000);
             }
         } catch (err) {
             console.error(err);
             alertBox.innerHTML = `<div class="alert alert-danger text-center">Failed to connect to server</div>`;
+            // ✅ NEW: Disappear after 3 seconds
+            setTimeout(() => { alertBox.innerHTML = ""; }, 3000);
+        } finally {
+            // Button Re-enable Logic (Kept as requested)
+            if(loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Sign In";
+            }
         }
     });
 }
