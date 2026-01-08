@@ -53,7 +53,7 @@ async function fetchMarketingData() {
 
     } catch (err) {
         console.error(err);
-        document.getElementById("marketingTableBody").innerHTML = `<tr><td colspan="4" class="text-danger text-center">Error loading data</td></tr>`;
+        document.getElementById("marketingTableBody").innerHTML = `<tr><td colspan="4" class="text-danger text-center">Error! loading data</td></tr>`;
     }
 }
 
@@ -76,6 +76,7 @@ document.getElementById("createMarketingForm").addEventListener("submit", async 
         if (res.ok) {
             messageInput.value = "";
             fetchMarketingData(); 
+            msgBox.innerHTML = `<span class="text-success small fw-bold">Record Added Successfully!</span>`;
         } else {
             msgBox.innerHTML = `<span class="text-danger">Failed to add campaign</span>`;
         }

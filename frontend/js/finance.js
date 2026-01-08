@@ -77,7 +77,7 @@ document.getElementById("createFinanceForm").addEventListener("submit", async (e
         if (res.ok) {
             messageInput.value = ""; 
             fetchFinanceData(); // Refresh list immediately
-            msgBox.innerHTML = `<span class="text-success small fw-bold">Record Added!</span>`;
+            msgBox.innerHTML = `<span class="text-success small fw-bold">Record Added Successfully!</span>`;
             setTimeout(() => msgBox.innerHTML = "", 3000);
         } else {
             const err = await res.json();
