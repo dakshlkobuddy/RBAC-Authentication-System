@@ -1,0 +1,320 @@
+{
+  "settings": {
+    "languages": [
+      "en"
+    ],
+    "forceNER": true,
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "en"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "locale": "en",
+          "trainByDomain": false,
+          "tag": "domain-manager-en",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "not,work": {
+            "intent": "support",
+            "domain": "default"
+          },
+          "fail,login": {
+            "intent": "support",
+            "domain": "default"
+          },
+          "error,system": {
+            "intent": "support",
+            "domain": "default"
+          },
+          "bug": {
+            "intent": "support",
+            "domain": "default"
+          },
+          "price": {
+            "intent": "enquiry",
+            "domain": "default"
+          },
+          "quot": {
+            "intent": "enquiry",
+            "domain": "default"
+          },
+          "demo": {
+            "intent": "enquiry",
+            "domain": "default"
+          },
+          "buy": {
+            "intent": "enquiry",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "support": "default",
+          "enquiry": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "not working",
+            "intent": "support"
+          },
+          {
+            "domain": "default",
+            "utterance": "login failed",
+            "intent": "support"
+          },
+          {
+            "domain": "default",
+            "utterance": "system error",
+            "intent": "support"
+          },
+          {
+            "domain": "default",
+            "utterance": "bug",
+            "intent": "support"
+          },
+          {
+            "domain": "default",
+            "utterance": "pricing",
+            "intent": "enquiry"
+          },
+          {
+            "domain": "default",
+            "utterance": "quote",
+            "intent": "enquiry"
+          },
+          {
+            "domain": "default",
+            "utterance": "demo",
+            "intent": "enquiry"
+          },
+          {
+            "domain": "default",
+            "utterance": "buy",
+            "intent": "enquiry"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "en",
+              "tag": "nlu-en",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "not": 1,
+              "work": 1,
+              "login": 1,
+              "fail": 1,
+              "system": 1,
+              "error": 1,
+              "bug": 1,
+              "price": 1,
+              "quot": 1,
+              "demo": 1,
+              "buy": 1
+            },
+            "intents": {
+              "support": 1,
+              "enquiry": 1
+            },
+            "intentFeatures": {
+              "support": {
+                "not": 1,
+                "work": 1,
+                "login": 1,
+                "fail": 1,
+                "system": 1,
+                "error": 1,
+                "bug": 1
+              },
+              "enquiry": {
+                "price": 1,
+                "quot": 1,
+                "demo": 1,
+                "buy": 1
+              }
+            },
+            "featuresToIntent": {
+              "not": [
+                "support"
+              ],
+              "work": [
+                "support"
+              ],
+              "login": [
+                "support"
+              ],
+              "fail": [
+                "support"
+              ],
+              "system": [
+                "support"
+              ],
+              "error": [
+                "support"
+              ],
+              "bug": [
+                "support"
+              ],
+              "price": [
+                "enquiry"
+              ],
+              "quot": [
+                "enquiry"
+              ],
+              "demo": [
+                "enquiry"
+              ],
+              "buy": [
+                "enquiry"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "en",
+                "tag": "nlu-en",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "not",
+                "work",
+                "login",
+                "fail",
+                "system",
+                "error",
+                "bug",
+                "price",
+                "quot",
+                "demo",
+                "buy"
+              ],
+              "intents": [
+                "support",
+                "enquiry"
+              ],
+              "perceptrons": [
+                [
+                  5.044194221496582,
+                  5.044194221496582,
+                  5.0440144538879395,
+                  5.0440144538879395,
+                  5.043771743774414,
+                  5.043771743774414,
+                  9.865083694458008,
+                  -4.171172142028809,
+                  -4.1578688621521,
+                  -4.143755912780762,
+                  -4.128845691680908,
+                  4.197985836245276
+                ],
+                [
+                  -3.3620166778564453,
+                  -3.3620166778564453,
+                  -3.361560583114624,
+                  -3.361560583114624,
+                  -3.361029624938965,
+                  -3.361029624938965,
+                  -6.488539218902588,
+                  7.516176223754883,
+                  7.522511005401611,
+                  7.503451824188232,
+                  7.483030319213867,
+                  6.72587850199938
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "en",
+        "not working"
+      ],
+      [
+        "en",
+        "login failed"
+      ],
+      [
+        "en",
+        "system error"
+      ],
+      [
+        "en",
+        "bug"
+      ],
+      [
+        "en",
+        "pricing"
+      ],
+      [
+        "en",
+        "quote"
+      ],
+      [
+        "en",
+        "demo"
+      ],
+      [
+        "en",
+        "buy"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {}
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}

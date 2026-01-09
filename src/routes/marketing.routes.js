@@ -3,56 +3,87 @@ const router = express.Router();
 const authMiddleware = require("../middlewares/auth.middleware");
 const rbacMiddleware = require("../middlewares/rbac.middleware");
 const pool = require("../config/database");
+const { sendEmail } = require("../services/mail.service");
 
-// GET DATA
+// --- 1. GET INCOMING LEADS (Inbox) ---
+router.get("/enquiries", authMiddleware, rbacMiddleware("enquiry.read"), async (req, res) => {
+    try {
+        const query = `
+            SELECT e.id, e.message, e.subject, e.ai_response, e.status, e.created_at,
+                   c.name as contact_name, c.email as contact_email, c.contact_type
+            FROM enquiries e
+            JOIN contacts c ON e.contact_id = c.id
+            ORDER BY 
+                CASE WHEN e.status = 'new' THEN 1 ELSE 2 END, 
+                e.created_at DESC
+        `;
+        const result = await pool.query(query);
+        res.json({ message: "Success", data: result.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+// --- 2. SEND REPLY (The Voice) ---
+router.post("/enquiries/:id/reply", authMiddleware, rbacMiddleware("enquiry.reply"), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { message } = req.body;
+
+        // Get Lead Details
+        const lead = await pool.query(
+            "SELECT e.subject, c.email, c.name FROM enquiries e JOIN contacts c ON e.contact_id = c.id WHERE e.id = $1", 
+            [id]
+        );
+
+        if (lead.rows.length === 0) return res.status(404).json({ message: "Lead not found" });
+        const { email, name, subject } = lead.rows[0];
+
+        // Send Email
+        const sent = await sendEmail(
+            email, 
+            `Re: ${subject || "Your Enquiry"}`, 
+            `<p>Hi ${name},</p><p>${message}</p><p>Best,<br>Sales Team</p>`
+        );
+
+        if (!sent) return res.status(500).json({ message: "Email failed to send" });
+
+        // Update DB (Close Enquiry)
+        await pool.query("UPDATE enquiries SET status = 'closed' WHERE id = $1", [id]);
+
+        res.json({ message: "Reply Sent & Lead Closed" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
+// --- 3. OLD CAMPAIGN ROUTES (Keep these) ---
 router.get("/data", authMiddleware, rbacMiddleware("marketing.read"), async (req, res) => {
     try {
         let result;
         if(req.user.role === 'admin'){
             result = await pool.query("SELECT * FROM marketing_data ORDER BY created_at DESC");
         } else {
-            // ✅ FIXED: req.user.id
             result = await pool.query("SELECT * FROM marketing_data WHERE created_by = $1 ORDER BY created_at DESC", [req.user.id]);
         }
         res.json({ message: "Success", data: result.rows });
     } catch(err) { res.status(500).json({message: "Server Error"}); }
 });
 
-// CREATE DATA
 router.post("/data", authMiddleware, rbacMiddleware("marketing.create"), async (req, res) => {
     try {
         const { message } = req.body;
-        // ✅ FIXED: req.user.id
         const result = await pool.query("INSERT INTO marketing_data (message, created_by) VALUES ($1, $2) RETURNING *", [message, req.user.id]);
         res.json({ message: "Created", createdData: result.rows[0] });
     } catch(err) { res.status(500).json({message: "Server Error"}); }
 });
 
-// UPDATE DATA
-router.put("/data/:id", authMiddleware, rbacMiddleware("marketing.update"), async (req, res) => {
-    try {
-        const { id } = req.params; const { message } = req.body;
-        const exist = await pool.query("SELECT * FROM marketing_data WHERE id=$1", [id]);
-        if(exist.rowCount===0) return res.status(404).json({message:"Not found"});
-        
-        // ✅ FIXED: req.user.id
-        if(req.user.role !== 'admin' && exist.rows[0].created_by !== req.user.id) return res.status(403).json({message:"Not allowed"});
-        
-        const updated = await pool.query("UPDATE marketing_data SET message=$1 WHERE id=$2 RETURNING *", [message, id]);
-        res.json({ message: "Updated", updatedData: updated.rows[0] });
-    } catch(err) { res.status(500).json({message: "Server Error"}); }
-});
-
-// DELETE DATA
 router.delete("/data/:id", authMiddleware, rbacMiddleware("marketing.delete"), async (req, res) => {
     try {
         const { id } = req.params;
-        const exist = await pool.query("SELECT * FROM marketing_data WHERE id=$1", [id]);
-        if(exist.rowCount===0) return res.status(404).json({message:"Not found"});
-        
-        // ✅ FIXED: req.user.id
-        if(req.user.role !== 'admin' && exist.rows[0].created_by !== req.user.id) return res.status(403).json({message:"Not allowed"});
-        
         await pool.query("DELETE FROM marketing_data WHERE id=$1", [id]);
         res.json({ message: "Deleted", deletedId: id });
     } catch(err) { res.status(500).json({message: "Server Error"}); }
